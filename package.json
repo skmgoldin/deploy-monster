@@ -9,6 +9,7 @@
   "author": "Mike Goldin <mike.goldin@consensys.net>",
   "dependencies": {
     "solc": "latest",
+    "mkdirp": "^0.5.1",
     "web3": "latest"
   },
   "devDependencies": {

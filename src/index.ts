@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import { DeployOpts, Output, Deployed, Source, Target, TxParams, Compiled } from './types.js';
 import * as Web3 from 'web3';
 import { cwd } from 'process';
-import * as utils from './utils.js';
+import * as eth_utils from './eth-utils.js';
+import * as mkdirp from 'mkdirp';
 
 const ROOT = cwd();
 
@@ -22,13 +23,13 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
       bytecode: undefined
     };
 
-    utils.compile(src).then((compiled) => {
+    eth_utils.compile(src).then((compiled) => {
 
       output.abi = compiled.abi;
       output.bytecode = compiled.bytecode;
 
       opts.txParams.data = compiled.bytecode; // Add bytecode
-      return utils.deploy(compiled, opts.args, opts.txParams, opts.web3);
+      return eth_utils.deploy(compiled, opts.args, opts.txParams, opts.web3);
 
     }).then((deployed) => {
 
@@ -57,7 +58,10 @@ export function compileAndDeployFromConfig(configPath: string): Promise<Output> 
 }
 
 export function writeOutput(path: string, output: Output) {
-  // TODO: check if outputs folder exists
+  const properPath = ROOT + path;
+  if(!fs.existsSync(properPath)) {
+    mkdirp.sync(properPath);
+  }
   
   const writeObj = {};
   writeObj[output.name] = {
@@ -67,5 +71,8 @@ export function writeOutput(path: string, output: Output) {
     bytecode: output.bytecode
   }
 
-  fs.writeFileSync(ROOT + path + '/contracts.json', JSON.stringify(writeObj, null, '  '));
+  fs.writeFileSync(properPath + '/contracts.json', JSON.stringify(writeObj, null, '  '));
 }
+
+
+
