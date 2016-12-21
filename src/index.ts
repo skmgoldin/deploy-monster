@@ -46,15 +46,14 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
 
 
 /* From config */
-export function compileAndDeployFromConfig(configPath: string) {
+export function compileAndDeployFromConfig(configPath: string): Promise<Output> {
   const conf = fs.readFileSync(ROOT + configPath, 'utf8');
   const confObj = JSON.parse(conf);
 
   confObj.web3 = new Web3();
   confObj.web3.setProvider(new Web3.providers.HttpProvider('http://localhost:8545'));
 
-  compileAndDeploy(confObj);
-  
+  return compileAndDeploy(confObj);
 }
 
 export function writeOutput(path: string, output: Output) {
