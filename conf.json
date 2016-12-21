@@ -1,0 +1,10 @@
+{
+  "name": "MyContract",
+  "file": "/contracts/MyContract.sol",
+  "args": ["0x81adee6adc40aedc434c8e33d5b4101ff3e5dbfe"],
+  "txParams": {
+    "from": "0xb4ea9d54627621f0f9ea9270f7f5140094d4dd80",
+    "gas": 500000
+  },
+  "web3": "http://localhost:8545"
+}

@@ -1,0 +1,72 @@
+import * as fs from 'fs';
+import { DeployOpts, Output, Deployed, Source, Target, TxParams, Compiled } from './types.js';
+import * as Web3 from 'web3';
+import { cwd } from 'process';
+import * as utils from './utils.js';
+
+const ROOT = cwd();
+
+/* From args */
+export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
+  return new Promise((resolve, reject) => {
+    /* TODO: Handle missing opts */
+
+    const code = fs.readFileSync(ROOT + opts.file, 'utf8'); //TODO: don't assume UTF-8
+    const src = {code: code, name: opts.name};
+
+    let output = {
+      name: opts.name,
+      abi: undefined,
+      address: undefined,
+      txHash: undefined,
+      bytecode: undefined
+    };
+
+    utils.compile(src).then((compiled) => {
+
+      output.abi = compiled.abi;
+      output.bytecode = compiled.bytecode;
+
+      opts.txParams.data = compiled.bytecode; // Add bytecode
+      return utils.deploy(compiled, opts.args, opts.txParams, opts.web3);
+
+    }).then((deployed) => {
+
+      output.address = deployed.address;
+      output.txHash = deployed.txHash;
+
+      resolve(output);
+
+    }).catch((err) => {
+      console.log(err); //TODO: Handle error better
+    });
+  });
+
+}
+
+
+/* From config */
+export function compileAndDeployFromConfig(configPath: string) {
+  const conf = fs.readFileSync(ROOT + configPath, 'utf8');
+  const confObj = JSON.parse(conf);
+
+  confObj.web3 = new Web3();
+  confObj.web3.setProvider(new Web3.providers.HttpProvider('http://localhost:8545'));
+
+  compileAndDeploy(confObj);
+  
+}
+
+export function writeOutput(path: string, output: Output) {
+  // TODO: check if outputs folder exists
+  
+  const writeObj = {};
+  writeObj[output.name] = {
+    abi: output.abi,
+    address: output.address,
+    txHash: output.txHash,
+    bytecode: output.bytecode
+  }
+
+  fs.writeFileSync(ROOT + path + '/contracts.json', JSON.stringify(writeObj, null, '  '));
+}

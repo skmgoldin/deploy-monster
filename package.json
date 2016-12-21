@@ -1,0 +1,19 @@
+{
+  "name": "deploy-monster",
+  "version": "0.0.1",
+  "description": "A tool for deploying solidity contracts",
+  "main": "./bin/index.js",
+  "scripts": {
+    "compile-ts": "tsc --outDir ./lib ./src/*"
+  },
+  "author": "Mike Goldin <mike.goldin@consensys.net>",
+  "dependencies": {
+    "solc": "latest",
+    "web3": "latest"
+  },
+  "devDependencies": {
+    "@types/es6-promise": "latest",
+    "@types/node": "latest",
+    "typescript": "^2.1.0"
+  }
+}
