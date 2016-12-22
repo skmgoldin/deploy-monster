@@ -1,10 +1,5 @@
 import { Web3 } from 'web3';
 
-export interface Source {
-  code: string,
-  name: string
-}
-
 export interface Target {
   protocol: string,
   host: string,

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { DeployOpts, Output, Deployed, Source, Target, TxParams, Compiled } from './types.js';
+import { DeployOpts, Output, Deployed, Target, TxParams, Compiled } from './types.js';
 import * as Web3 from 'web3';
 import { cwd } from 'process';
 import * as eth_utils from './eth-utils.js';
@@ -12,8 +12,7 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
   return new Promise((resolve, reject) => {
     /* TODO: Handle missing opts */
 
-    const code = fs.readFileSync(ROOT + opts.file, 'utf8'); //TODO: don't assume UTF-8
-    const src = {code: code, name: opts.name};
+    const src = fs.readFileSync(ROOT + opts.file, 'utf8'); //TODO: don't assume UTF-8
 
     const output = {};
 

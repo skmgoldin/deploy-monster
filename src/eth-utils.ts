@@ -1,11 +1,11 @@
-import { Deployed, Source, Target, TxParams, Compiled } from './types.js';
+import { Deployed, Target, TxParams, Compiled } from './types.js';
 import { Web3 } from 'web3';
 import * as solc from 'solc';
 
 // Need to handle write "above" this function
-export function compile(src: Source): Promise<Compiled> {
+export function compile(src: string): Promise<Compiled> {
   return new Promise((resolve, reject) => {
-    const solcOut = solc.compile(src.code, 0); // No optimizer
+    const solcOut = solc.compile(src, 0); // No optimizer
 
     const compiled = {};
     for(var contract in solcOut.contracts) {
