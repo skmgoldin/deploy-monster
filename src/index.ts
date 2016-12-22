@@ -52,7 +52,7 @@ export function compileAndDeployFromConfig(configPath: string): Promise<Output> 
   const confObj = JSON.parse(conf);
 
   confObj.web3 = new Web3();
-  confObj.web3.setProvider(new Web3.providers.HttpProvider(confObj.web3));
+  confObj.web3.setProvider(new Web3.providers.HttpProvider(confObj.web3Provider));
 
   return compileAndDeploy(confObj);
 }
