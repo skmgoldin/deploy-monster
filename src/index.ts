@@ -15,13 +15,7 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
     const code = fs.readFileSync(ROOT + opts.file, 'utf8'); //TODO: don't assume UTF-8
     const src = {code: code, name: opts.name};
 
-    const output = {
-      name: opts.name,
-      abi: undefined,
-      address: undefined,
-      txHash: undefined,
-      bytecode: undefined
-    };
+    const output = {};
 
     eth_utils.compile(src).then((compiled) => {
 
@@ -37,8 +31,8 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
 
     }).then((deployed) => {
 
-      output.address = deployed.address;
-      output.txHash = deployed.txHash;
+      output[opts.name].address = deployed.address;
+      output[opts.name].txHash = deployed.txHash;
 
       resolve(output);
 
@@ -48,7 +42,6 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
   });
 
 }
-
 
 /* From config */
 export function compileAndDeployFromConfig(configPath: string): Promise<Output> {
@@ -67,15 +60,7 @@ export function writeOutput(path: string, output: Output) {
     mkdirp.sync(properPath);
   }
   
-  const writeObj = {};
-  writeObj[output.name] = {
-    abi: output.abi,
-    address: output.address,
-    txHash: output.txHash,
-    bytecode: output.bytecode
-  }
-
-  fs.writeFileSync(properPath + '/contracts.json', JSON.stringify(writeObj, null, '  '));
+  fs.writeFileSync(properPath + '/contracts.json', JSON.stringify(output, null, '  '));
 }
 
 
