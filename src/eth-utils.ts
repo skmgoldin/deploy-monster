@@ -6,20 +6,25 @@ import * as solc from 'solc';
 export function compile(src: Source): Promise<Compiled> {
   return new Promise((resolve, reject) => {
     const solcOut = solc.compile(src.code, 0); // No optimizer
-    const compiled = {
-      bytecode: solcOut.contracts[src.name].bytecode,
-      abi: JSON.parse(solcOut.contracts[src.name].interface)
-    };
+
+    const compiled = {};
+    for(var contract in solcOut.contracts) {
+      compiled[contract] = {
+        bytecode: solcOut.contracts[contract].bytecode,
+        abi: JSON.parse(solcOut.contracts[contract].interface)
+      }
+    }
+
     resolve(compiled);
     // TODO: handle error
   });
 }
 
-export function deploy(compiled: Compiled, args: string[], txParams: TxParams,
+export function deploy(compiled: Compiled, name: string, args: string[], txParams: TxParams,
                        web3: Web3): Promise<Deployed> {
   return new Promise((resolve, reject) => {
     web3.eth.getAccounts(function(err, accts) {
-      const contract = web3.eth.contract(compiled.abi);
+      const contract = web3.eth.contract(compiled[name].abi);
 
       let deployed = {
         address: undefined,

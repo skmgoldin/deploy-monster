@@ -15,7 +15,7 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
     const code = fs.readFileSync(ROOT + opts.file, 'utf8'); //TODO: don't assume UTF-8
     const src = {code: code, name: opts.name};
 
-    let output = {
+    const output = {
       name: opts.name,
       abi: undefined,
       address: undefined,
@@ -25,11 +25,15 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
 
     eth_utils.compile(src).then((compiled) => {
 
-      output.abi = compiled.abi;
-      output.bytecode = compiled.bytecode;
+      for(var contract in compiled) {
+        output[contract] = {
+          abi: compiled[contract].abi,
+          bytecode: compiled[contract].bytecode
+        }
+      }
 
-      opts.txParams.data = compiled.bytecode; // Add bytecode
-      return eth_utils.deploy(compiled, opts.args, opts.txParams, opts.web3);
+      opts.txParams.data = compiled[opts.name].bytecode; // Add bytecode
+      return eth_utils.deploy(compiled, opts.name, opts.args, opts.txParams, opts.web3);
 
     }).then((deployed) => {
 
