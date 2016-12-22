@@ -4,13 +4,16 @@
   "description": "A tool for deploying solidity contracts",
   "main": "./bin/index.js",
   "scripts": {
-    "compile-ts": "tsc --outDir ./lib ./src/*"
+    "compile-ts": "tsc --outDir ./lib ./src/*",
+    "test": "npm run compile-ts && mocha tests/tests.js"
   },
   "author": "Mike Goldin <mike.goldin@consensys.net>",
   "dependencies": {
     "solc": "latest",
     "mkdirp": "^0.5.1",
-    "web3": "latest"
+    "web3": "latest",
+    "mocha": "latest",
+    "chai": "latest"
   },
   "devDependencies": {
     "@types/es6-promise": "latest",
