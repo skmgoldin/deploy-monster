@@ -9,7 +9,7 @@ const ROOT = cwd();
 
 /* From args */
 export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
-  return new Promise((resolve, reject) => {
+  return Promise.resolve().then(() => {
     /* TODO: Handle missing opts */
 
     const code = fs.readFileSync(ROOT + opts.file, 'utf8'); //TODO: don't assume UTF-8
@@ -17,7 +17,7 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
 
     const output = {};
 
-    eth_utils.compile(src).then((compiled) => {
+    return eth_utils.compile(src).then((compiled) => {
 
       for(var contract in compiled) {
         output[contract] = {
@@ -34,10 +34,7 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
       output[opts.name].address = deployed.address;
       output[opts.name].txHash = deployed.txHash;
 
-      resolve(output);
-
-    }).catch((err) => {
-      console.log(err); //TODO: Handle error better
+      return output;
     });
   });
 
@@ -59,9 +56,6 @@ export function writeOutput(path: string, output: Output) {
   if(!fs.existsSync(properPath)) {
     mkdirp.sync(properPath);
   }
-  
+
   fs.writeFileSync(properPath + '/contracts.json', JSON.stringify(output, null, '  '));
 }
-
-
-
