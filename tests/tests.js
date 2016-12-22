@@ -26,7 +26,7 @@ describe('index.js', function() {
             gas: 500000
           }
           opts = {
-            file: '/tests/test.sol',
+            file: 'tests/test.sol',
             name: 'Test',
             args: [accts[1], 4, true],
             txParams: txParams,

@@ -4,15 +4,14 @@ import * as Web3 from 'web3';
 import { cwd } from 'process';
 import * as eth_utils from './eth-utils.js';
 import * as mkdirp from 'mkdirp';
-
-const ROOT = cwd();
+import * as path from 'path';
 
 /* From args */
 export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
   return Promise.resolve().then(() => {
     /* TODO: Handle missing opts */
 
-    const src = fs.readFileSync(ROOT + opts.file, 'utf8'); //TODO: don't assume UTF-8
+    const src = fs.readFileSync(path.resolve(opts.file), 'utf8'); //TODO: don't assume UTF-8
 
     const output = {};
 
@@ -41,7 +40,7 @@ export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
 
 /* From config */
 export function compileAndDeployFromConfig(configPath: string): Promise<Output> {
-  const conf = fs.readFileSync(ROOT + configPath, 'utf8');
+  const conf = fs.readFileSync(path.resolve(configPath), 'utf8');
   const confObj = JSON.parse(conf);
 
   confObj.web3 = new Web3();
@@ -50,11 +49,8 @@ export function compileAndDeployFromConfig(configPath: string): Promise<Output> 
   return compileAndDeploy(confObj);
 }
 
-export function writeOutput(path: string, output: Output) {
-  const properPath = ROOT + path;
-  if(!fs.existsSync(properPath)) {
-    mkdirp.sync(properPath);
-  }
+export function writeOutput(dirname: string, output: Output) {
+  mkdirp.sync(path.resolve(dirname));
 
-  fs.writeFileSync(properPath + '/contracts.json', JSON.stringify(output, null, '  '));
+  fs.writeFileSync(path.resolve(dirname, '/contracts.json'), JSON.stringify(output, null, '  '));
 }
