@@ -1,3 +1,4 @@
+[ ![Codeship Status for skmgoldin/deploy-monster](https://app.codeship.com/projects/fda3aca0-aaa0-0134-e233-6aed319023da/status?branch=master)](https://app.codeship.com/projects/191974)
 # SYNOPSIS
 
 A module for deploying Ethereum smart contracts.
