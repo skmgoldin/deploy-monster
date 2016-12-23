@@ -1,6 +1,6 @@
 const chai = require('chai')
 const dm = require('../lib/index.js')
-const Web3 = require('Web3');
+const Web3 = require('web3');
 
 describe('index.js', function() {
   describe('using a single contract with no dependencies...', function() {
