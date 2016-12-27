@@ -76,13 +76,13 @@ describe('index.js', function() {
             gas: 500000
           }
           opts = {
-            file: '/tests/test.sol',
+            file: 'tests/test.sol',
             name: 'Test',
             args: [accts[1], 4, true],
             txParams: txParams,
             web3: web3
           }
-          dm.compileAndDeployFromConfig('/tests/testConf.json').then(function(_output) {
+          dm.compileAndDeployFromConfig('tests/testConf.json').then(function(_output) {
             output = _output
             testDef = web3.eth.contract(output.Test.abi)
             testInstance = testDef.at(output.Test.address)

@@ -1,5 +1,5 @@
 {
-  "file": "/tests/test.sol",
+  "file": "tests/test.sol",
   "name": "Test",
   "args": ["0xbd7a02852361014fde1bafd42f81cf889a062f09", 4, true],
   "txParams": {
