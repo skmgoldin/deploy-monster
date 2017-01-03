@@ -20,13 +20,14 @@ describe('index.js', function() {
         web3 = new Web3()
         web3.setProvider(new Web3.providers.HttpProvider('http://localhost:8545'))
         web3.eth.getAccounts(function(err, _accts) {
+          if (err) return cb(err);
           accts = _accts
           txParams = {
             from: accts[0],
             gas: 500000
           }
           opts = {
-            file: '/tests/test.sol',
+            file: 'tests/test.sol',
             name: 'Test',
             args: [accts[1], 4, true],
             txParams: txParams,
@@ -37,7 +38,7 @@ describe('index.js', function() {
             testDef = web3.eth.contract(output.Test.abi)
             testInstance = testDef.at(output.Test.address)
             cb()
-          })
+          }, cb)
         })
       })
 
@@ -70,24 +71,25 @@ describe('index.js', function() {
         web3 = new Web3()
         web3.setProvider(new Web3.providers.HttpProvider('http://localhost:8545'))
         web3.eth.getAccounts(function(err, _accts) {
+          if (err) return cb(err);
           accts = _accts
           txParams = {
             from: accts[0],
             gas: 500000
           }
           opts = {
-            file: '/tests/test.sol',
+            file: 'tests/test.sol',
             name: 'Test',
             args: [accts[1], 4, true],
             txParams: txParams,
             web3: web3
           }
-          dm.compileAndDeployFromConfig('/tests/testConf.json').then(function(_output) {
+          dm.compileAndDeployFromConfig('tests/testConf.json').then(function(_output) {
             output = _output
             testDef = web3.eth.contract(output.Test.abi)
             testInstance = testDef.at(output.Test.address)
             cb()
-          })
+          }, cb)
         })
       })
 

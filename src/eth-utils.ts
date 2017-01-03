@@ -24,7 +24,7 @@ export function deploy(compiled: Compiled, name: string, args: string[], txParam
                        web3: Web3): Promise<Deployed> {
   return new Promise((resolve, reject) => {
     web3.eth.getAccounts(function(err, accts) {
-      if(err) { reject(err) }
+      if (err) return reject(err)
       const contract = web3.eth.contract(compiled[name].abi);
 
       let deployed = {
@@ -33,15 +33,14 @@ export function deploy(compiled: Compiled, name: string, args: string[], txParam
       };
 
       contract.new(...args, txParams, function(err, deployedContract) {
-        if(err) { reject(err); }
+        if(err) return reject(err)
         if (deployedContract.address) {
           deployed.address = deployedContract.address;
           resolve(deployed);
         } else {
           deployed.txHash = deployedContract.transactionHash;
         }
-      }); 
+      });
     });
   });
 }
-
