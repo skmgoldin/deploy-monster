@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import { DeployOpts, Output, Deployed, Target, TxParams, Compiled } from './types.js';
 import * as Web3 from 'web3';
-import { cwd } from 'process';
 import * as eth_utils from './eth-utils.js';
 import * as mkdirp from 'mkdirp';
 import * as path from 'path';
