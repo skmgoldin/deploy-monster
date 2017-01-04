@@ -7,9 +7,11 @@ export interface Target {
 }
 
 export interface TxParams {
-  from: string,
+  value: number,
+  gas: number,
+  gasPrice: number,
   data: string,
-  gas: number
+  nonce: number
 }
 
 export interface Deployed {
@@ -35,5 +37,6 @@ export interface DeployOpts {
   name: string,
   args: string[],
   txParams: TxParams,
+  signingKey: string,
   web3: Web3
 }
