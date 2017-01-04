@@ -6,9 +6,11 @@ import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 
 /* From args */
-export function compileAndDeploy(opts: DeployOpts): Promise<Output> {
+export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
   return Promise.resolve().then(() => {
     /* TODO: Handle missing opts */
+
+    const opts = eth_utils.sanitizeDeployOpts(_opts)
 
     const src = fs.readFileSync(path.resolve(opts.file), 'utf8'); //TODO: don't assume UTF-8
 
@@ -42,10 +44,12 @@ export function compileAndDeployFromConfig(configPath: string): Promise<Output> 
   const conf = fs.readFileSync(path.resolve(configPath), 'utf8');
   const confObj = JSON.parse(conf);
 
-  confObj.web3 = new Web3();
-  confObj.web3.setProvider(new Web3.providers.HttpProvider(confObj.web3Provider));
+  const opts = eth_utils.sanitizeDeployOpts(confObj)
 
-  return compileAndDeploy(confObj);
+  opts.web3 = new Web3();
+  opts.web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider));
+
+  return compileAndDeploy(opts);
 }
 
 export function writeOutput(dirname: string, output: Output) {

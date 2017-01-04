@@ -1,4 +1,4 @@
-import { Deployed, Target, TxParams, Compiled } from './types.js';
+import { Deployed, Target, TxParams, Compiled, DeployOpts } from './types.js';
 import { Web3 } from 'web3';
 import * as solc from 'solc';
 
@@ -43,4 +43,38 @@ export function deploy(compiled: Compiled, name: string, args: string[], txParam
       });
     });
   });
+}
+
+export function sanitizeDeployOpts(opts: DeployOpts) {
+  const defaultGas = 1000000
+  const defaultGasPrice = 1
+  const defaultWeb3Provider = 'http://localhost:8545'
+
+  /* Check opts */
+  if(typeof(opts.file) !== 'string') { throw 'no file provided' }
+  if(typeof(opts.name) !== 'string') { throw 'no contract name provided' }
+  if(!Array.isArray(opts.args)) {
+    opts.args = [] 
+  }
+  if(typeof(opts.txParams) !== 'object') { throw 'no txParams provided' }
+  if(typeof(opts.signingKey) !== 'string') { throw 'no signing key provided' }
+  if(typeof(opts.web3Provider) !== 'string') {
+    opts.web3Provider = defaultWeb3Provider
+  }
+  
+  /* Check opts.txParams */
+  if(typeof(opts.txParams.value) !== 'number') {
+    opts.txParams.value = 0 
+  }
+  if(typeof(opts.txParams.gas) !== 'number') {
+    opts.txParams.gas = defaultGas
+  }
+  if(typeof(opts.txParams.gasPrice) !== 'number') {
+    opts.txParams.gasPrice = defaultGasPrice 
+  }
+  //if(typeof(opts.txParams.data) === 'undefined') { throw }
+  if(typeof(opts.txParams.nonce) !== 'number') { throw 'no nonce provided' }
+  /* ^ this is recoverable, but throw for now. */
+
+  return opts
 }
