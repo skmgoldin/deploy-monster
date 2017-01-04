@@ -38,5 +38,6 @@ export interface DeployOpts {
   args: string[],
   txParams: TxParams,
   signingKey: string,
+  web3Provider: string,
   web3: Web3
 }
