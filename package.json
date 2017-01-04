@@ -10,16 +10,18 @@
   },
   "author": "Mike Goldin <mike.goldin@consensys.net>",
   "dependencies": {
+    "ethereumjs-tx": "^1.2.0",
+    "keythereum": "latest",
     "solc": "latest",
     "mkdirp": "^0.5.1",
     "web3": "latest",
     "mocha": "latest",
-    "chai": "latest"
+    "chai": "latest",
+    "ethereumjs-testrpc": "^3.0.0"
   },
   "devDependencies": {
     "@types/es6-promise": "latest",
     "@types/node": "latest",
-    "typescript": "^2.1.0",
-    "ethereumjs-testrpc": "^3.0.0"
+    "typescript": "^2.1.0"
   }
 }

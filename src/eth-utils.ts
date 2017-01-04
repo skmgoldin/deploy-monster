@@ -1,8 +1,8 @@
 import { Deployed, Target, TxParams, Compiled, DeployOpts } from './types.js';
-import { Web3 } from 'web3';
+import * as Web3 from 'web3';
 import * as solc from 'solc';
+const Transaction = require('ethereumjs-tx')
 
-// Need to handle write "above" this function
 export function compile(src: string): Promise<Compiled> {
   return new Promise((resolve, reject) => {
     const solcOut = solc.compile(src, 0); // No optimizer
@@ -20,29 +20,47 @@ export function compile(src: string): Promise<Compiled> {
   });
 }
 
-export function deploy(compiled: Compiled, name: string, args: string[], txParams: TxParams,
-                       web3: Web3): Promise<Deployed> {
+export function deploy(opts: DeployOpts, compiled: Compiled): Promise<Deployed> {
   return new Promise((resolve, reject) => {
-    web3.eth.getAccounts(function(err, accts) {
-      if (err) return reject(err)
-      const contract = web3.eth.contract(compiled[name].abi);
 
-      let deployed = {
-        address: undefined,
-        txHash: undefined
-      };
+    const deployed = {
+      address: undefined,
+      txHash: undefined
+    }
 
-      contract.new(...args, txParams, function(err, deployedContract) {
-        if(err) return reject(err)
-        if (deployedContract.address) {
-          deployed.address = deployedContract.address;
-          resolve(deployed);
-        } else {
-          deployed.txHash = deployedContract.transactionHash;
-        }
-      });
-    });
-  });
+    const tx = new Transaction(null)
+    tx.nonce = opts.txParams.nonce
+    tx.gasPrice = opts.txParams.gasPrice
+    tx.gasLimit = opts.txParams.gas
+    tx.value = opts.txParams.value
+
+    const contract = opts.web3.eth.contract(compiled[opts.name].abi)
+    opts.txParams.data = contract.new.getData(...opts.args, { data: opts.txParams.data} )
+    tx.data = opts.txParams.data
+
+    const signingKey = new Buffer(opts.signingKey, 'hex')
+    tx.sign(signingKey)
+    const rawTx = tx.serialize()
+    opts.web3.eth.sendRawTransaction(rawTx, function(err, txHash) {
+      if(err) return reject(err)
+      deployed.txHash = txHash
+      getTxReceipt(deployed.txHash, function(err, res) {
+        deployed.address = res.contractAddress
+        resolve(deployed);
+      })
+    })
+  })
+
+  function getTxReceipt(txHash: string, cb) {
+    opts.web3.eth.getTransactionReceipt(txHash, function(err, txReceipt) {
+      if(err) { throw 'couldn\'t get Tx receipt' }
+      if(txReceipt !== null) {
+        cb(null, txReceipt)
+      } else { 
+        getTxReceipt(txHash, cb)
+      }
+    })
+  }
 }
 
 export function sanitizeDeployOpts(opts: DeployOpts) {
@@ -61,6 +79,11 @@ export function sanitizeDeployOpts(opts: DeployOpts) {
   if(typeof(opts.web3Provider) !== 'string') {
     opts.web3Provider = defaultWeb3Provider
   }
+
+  if(typeof(opts.web3) === 'undefined') {
+    opts.web3 = new Web3();
+    opts.web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider));
+  }
   
   /* Check opts.txParams */
   if(typeof(opts.txParams.value) !== 'number') {
@@ -72,7 +95,6 @@ export function sanitizeDeployOpts(opts: DeployOpts) {
   if(typeof(opts.txParams.gasPrice) !== 'number') {
     opts.txParams.gasPrice = defaultGasPrice 
   }
-  //if(typeof(opts.txParams.data) === 'undefined') { throw }
   if(typeof(opts.txParams.nonce) !== 'number') { throw 'no nonce provided' }
   /* ^ this is recoverable, but throw for now. */
 

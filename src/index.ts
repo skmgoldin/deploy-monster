@@ -8,7 +8,6 @@ import * as path from 'path';
 /* From args */
 export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
   return Promise.resolve().then(() => {
-    /* TODO: Handle missing opts */
 
     const opts = eth_utils.sanitizeDeployOpts(_opts)
 
@@ -25,8 +24,9 @@ export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
         }
       }
 
-      opts.txParams.data = compiled[opts.name].bytecode; // Add bytecode
-      return eth_utils.deploy(compiled, opts.name, opts.args, opts.txParams, opts.web3);
+      opts.txParams.data = '0x' + output[opts.name].bytecode
+
+      return eth_utils.deploy(opts, compiled);
 
     }).then((deployed) => {
 
@@ -45,9 +45,6 @@ export function compileAndDeployFromConfig(configPath: string): Promise<Output> 
   const confObj = JSON.parse(conf);
 
   const opts = eth_utils.sanitizeDeployOpts(confObj)
-
-  opts.web3 = new Web3();
-  opts.web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider));
 
   return compileAndDeploy(opts);
 }
