@@ -42,7 +42,7 @@ An [`Output`](#Output) object.
 - `file` [string] - An absolute or relative path from the process current working directory to the contract to be compiled.
 - `name` [string] - The name of the contract to be compiled, as in the Solidity `contract <Name> {` shared by the contract's constructor function.
 - `signingKey` [string]
-- `txParams` [object]
+- `txParams` [[`TxParams`](#TxParams)]
 - `args` [number] - (*optional*, default `[]`)
 - `web3Provider` [string] - (*optional*, default `http://localhost:8545`)
 - `web3` [object] - (*optional*, default derived from `web3Provider`)
