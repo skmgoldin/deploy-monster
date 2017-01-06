@@ -48,7 +48,7 @@ A nested object keyed by the names (as in the Solidity `contract <Name> {` share
 - `web3Provider` [string] - (*optional*, default `http://localhost:8545`)
 - `web3` [object] - (*optional*, default derived from `web3Provider`)
 
-See the [[exampleConf](#https://github.com/skmgoldin/deploy-monster/blob/master/exampleConf.json)], for instance.
+See the [exampleConf](https://github.com/skmgoldin/deploy-monster/blob/master/exampleConf.json), for instance.
 
 #### `Output`
 
