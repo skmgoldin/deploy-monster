@@ -8,59 +8,58 @@ A module for deploying Ethereum smart contracts.
 
 ## API
 
+### Functions
+
+- [`compileAndDeploy`](#compileAndDeploy)
+- [`compileAndDeployFromConfig`](#compileAndDeployFromConfig)
+
+#### `compileAndDeploy(opts: DeployOpts)`
+Compile and deploy a contract from the values specified in `opts`.
+
+- `opts` - A [`DeployOpts`](#DeployOpts) object.
+
+#####Returns:
+
+An [`Output`](#Output) object.
+
+#### `compileAndDeployFromConfig(configPath: string)`
+Compile and deploy a contract from the values specified in a JSON config file.
+
+- `configPath` - An absolute or relative path from the process current working directory to a JSON config file which can be parsed as a [`DeployOpts`](#DeployOpts) object.
+
+#####Returns:
+
+An [`Output`](#Output) object.
+
 ### Types
 
+- [`DeployOpts`](#DeployOpts)
 - [`Output`](#Output)
 - [`TxParams`](#TxParams)
+
+#### `DeployOpts`
+
+- `file` [string] - An absolute or relative path from the process current working directory to the contract to be compiled.
+- `name` [string] - The name of the contract to be compiled, as in the Solidity `contract <Name> {` shared by the contract's constructor function.
+- `signingKey` [string]
+- `txParams` [object]
+- `args` [number] (*optional*, default `[]`)
+- `web3Provider` [string] (*optional*, default `http://localhost:8545`)
+- `web3` [object] (*optional*, default derived from `web3Provider`)
 
 #### `Output`
 
 An object with the following properties:
 
-- `name` - string
-- `abi` - string
-- `address` - string
-- `txHash` - string
-- `bytecode` - string
+- `name` [string] - The name of the contract.
+- `abi` [string] - The contract's ABI.
+- `address` [string] - The address at which the contract was deployed.
+- `txHash` [string] - The transaction hash of the contract deployment.
+- `bytecode` [string] - The contract's bytecode.
 
 #### `TxParams`
 
-- `from` - string
-- `data` - string
-- `gas` - number
-
-### Functions
-
-- [`compileAndDeploy`](#compileAndDeploy)
-- [`compileAndDeployFromConfig`](#compileAndDeployFromConfig)
-- [`writeOutput`](#writeOutput)
-
-#### `compileAndDeploy(opts)`
-Compile and deploy a contract from the values specified in `opts`.
-
-#####Options:
-
-- `file` - (mandatory) the path to the contract file from the process working directory.
-- `name` - (mandatory) the name of the contract.
-- `args` - (mandatory) an array of arguments to be provided to the contract's constructor.
-- `txParams` - (optional) a web3.js-style object specifying transaction parameters.
-- `web3` - (optional) an instantiated web3 object with a specified provider. If undefined, `http://localhost:8545` will be used.
-
-#####Returns:
-
-An `Output` object.
-
-#### `compileAndDeployFromConfig(configPath)`
-Compile and deploy a contract from the values specified in a JSON config file.
-
-- `configPath` - a string indicating a path to the config from the process current working directory.
-
-#####Returns:
-
-An `Output` object.
-
-#### `writeOutput(path, output)`
-Write a JSON-encoded output file with the deployed contract's address, abi, bytecode and the transaction hash of its deployment.
-
-- `path` - a string indicating a path to the file to be written from the process current working directory.
-- `output` - an `Output` object.
+- `nonce` [number] - The nonce with which to send the transaction. Derivable using [`web3.eth.getTransactionCount`](#https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactioncount) on the address of the `signingKey` specified in the [`DeployOpts`](#DeployOpts).
+- `gas` [number] (*optional*, default `1000000`)
+- `gasPrice` [number] (*optional*, default `1`)
+- `value` [number] (*optional*, default `0`)
