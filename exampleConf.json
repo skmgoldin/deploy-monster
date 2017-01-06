@@ -1,0 +1,19 @@
+{
+  "MyContract": {
+    "file": "/contracts/MyContract.sol",
+    "args": ["0x81adee6adc40aedc434c8e33d5b4101ff3e5dbfe", 4, true],
+    "txParams": {
+      "nonce": 419,
+      "gas": 500000
+    },
+    "web3Provider": "http://localhost:8545"
+  },
+  "MyOtherContract": {
+    "file": "/contracts/MyOtherContract.sol",
+    "args": [],
+    "txParams": {
+      "nonce": 420
+    },
+    "web3Provider": "http://localhost:8545"
+  }
+}

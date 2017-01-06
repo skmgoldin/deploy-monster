@@ -2,55 +2,47 @@ import * as fs from 'fs';
 import { DeployOpts, Output, Deployed, Target, TxParams, Compiled } from './types.js';
 import * as Web3 from 'web3';
 import * as eth_utils from './eth-utils.js';
-import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 
 /* From args */
 export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
-  return Promise.resolve().then(() => {
-
+  return new Promise((resolve, reject) => {
     const opts = eth_utils.sanitizeDeployOpts(_opts)
+    const orderedOpts = eth_utils.orderDeployment(opts)
+    const output = {}
 
-    const src = fs.readFileSync(path.resolve(opts.file), 'utf8'); //TODO: don't assume UTF-8
+    let numDeployed = 0
+    orderedOpts.forEach(function(contract) {
+      const src = fs.readFileSync(path.resolve(contract.file), 'utf8')
+      eth_utils.compile(src).then((compiled) => {
 
-    const output = {};
-
-    return eth_utils.compile(src).then((compiled) => {
-
-      for(var contract in compiled) {
-        output[contract] = {
-          abi: compiled[contract].abi,
-          bytecode: compiled[contract].bytecode
+        for(let contract in compiled) {
+          output[contract] = {
+            abi: compiled[contract].abi,
+            bytecode: compiled[contract].bytecode
+          }
         }
-      }
 
-      opts.txParams.data = '0x' + output[opts.name].bytecode
+        contract.txParams.data = '0x' + output[contract.name].bytecode
 
-      return eth_utils.deploy(opts, compiled);
-
-    }).then((deployed) => {
-
-      output[opts.name].address = deployed.address;
-      output[opts.name].txHash = deployed.txHash;
-
-      return output;
-    });
-  });
-
+        eth_utils.deploy(contract, compiled).then((deployed) => {
+          output[contract.name].address = deployed.address
+          output[contract.name].txHash = deployed.txHash
+          numDeployed = numDeployed + 1
+          if(numDeployed === orderedOpts.length) {
+            resolve(output)
+          }
+        })
+      })
+    })
+  })
 }
 
 /* From config */
 export function compileAndDeployFromConfig(configPath: string): Promise<Output> {
-  const conf = fs.readFileSync(path.resolve(configPath), 'utf8');
-  const confObj = JSON.parse(conf);
+  const conf = fs.readFileSync(path.resolve(configPath), 'utf8')
+  const opts = JSON.parse(conf)
 
-  const opts = eth_utils.sanitizeDeployOpts(confObj)
-
-  return compileAndDeploy(opts);
+  return compileAndDeploy(opts)
 }
 
-export function writeOutput(dirname: string, output: Output) {
-  mkdirp.sync(path.resolve(dirname));
-
-  fs.writeFileSync(path.resolve(dirname, '/contracts.json'), JSON.stringify(output, null, '  '));
-}

@@ -39,13 +39,16 @@ An [`Output`](#Output) object.
 
 #### `DeployOpts`
 
+A nested object keyed by the names (as in the Solidity `contract <Name> {` shared by the contracts' constructor functions) where the inner objects have the following properties:
+
 - `file` [string] - An absolute or relative path from the process current working directory to the contract to be compiled.
-- `name` [string] - The name of the contract to be compiled, as in the Solidity `contract <Name> {` shared by the contract's constructor function.
 - `signingKey` [string]
 - `txParams` [[`TxParams`](#TxParams)]
 - `args` [number] - (*optional*, default `[]`)
 - `web3Provider` [string] - (*optional*, default `http://localhost:8545`)
 - `web3` [object] - (*optional*, default derived from `web3Provider`)
+
+See the [exampleConf](#https://github.com/skmgoldin/deploy-monster/blob/master/exampleConf.json), for instance.
 
 #### `Output`
 
@@ -58,6 +61,8 @@ An object with the following properties:
 - `bytecode` [string] - The contract's bytecode.
 
 #### `TxParams`
+
+A nested object keyed by the names (as in the Solidity `contract <Name> {` shared by the contracts' constructor functions) where the inner objects have the following properties:
 
 - `nonce` [number] - The nonce with which to send the transaction. Derivable using [`web3.eth.getTransactionCount`](#https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactioncount) on the address of the `signingKey` specified in the [`DeployOpts`](#DeployOpts).
 - `gas` [number] - (*optional*, default `1000000`)

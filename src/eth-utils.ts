@@ -1,13 +1,13 @@
-import { Deployed, Target, TxParams, Compiled, DeployOpts } from './types.js';
-import * as Web3 from 'web3';
-import * as solc from 'solc';
+import { Deployed, Target, TxParams, Compiled, DeployOpts } from './types.js'
+import * as Web3 from 'web3'
+import * as solc from 'solc'
 const Transaction = require('ethereumjs-tx')
 
 export function compile(src: string): Promise<Compiled> {
   return new Promise((resolve, reject) => {
-    const solcOut = solc.compile(src, 0); // No optimizer
+    const solcOut = solc.compile(src, 0) // No optimizer
 
-    const compiled = {};
+    const compiled = {}
     for(var contract in solcOut.contracts) {
       compiled[contract] = {
         bytecode: solcOut.contracts[contract].bytecode,
@@ -15,9 +15,9 @@ export function compile(src: string): Promise<Compiled> {
       }
     }
 
-    resolve(compiled);
+    resolve(compiled)
     // TODO: handle error
-  });
+  })
 }
 
 export function deploy(opts: DeployOpts, compiled: Compiled): Promise<Deployed> {
@@ -35,18 +35,17 @@ export function deploy(opts: DeployOpts, compiled: Compiled): Promise<Deployed> 
     tx.value = opts.txParams.value
 
     const contract = opts.web3.eth.contract(compiled[opts.name].abi)
-    opts.txParams.data = contract.new.getData(...opts.args, { data: opts.txParams.data} )
-    tx.data = opts.txParams.data
+    tx.data = contract.new.getData(...opts.args, { data: opts.txParams.data} )
 
     const signingKey = new Buffer(opts.signingKey, 'hex')
     tx.sign(signingKey)
     const rawTx = tx.serialize()
     opts.web3.eth.sendRawTransaction(rawTx, function(err, txHash) {
-      if(err) return reject(err)
+      if(err) { return reject(err) }
       deployed.txHash = txHash
       getTxReceipt(deployed.txHash, function(err, res) {
         deployed.address = res.contractAddress
-        resolve(deployed);
+        resolve(deployed)
       })
     })
   })
@@ -68,35 +67,52 @@ export function sanitizeDeployOpts(opts: DeployOpts) {
   const defaultGasPrice = 1
   const defaultWeb3Provider = 'http://localhost:8545'
 
-  /* Check opts */
-  if(typeof(opts.file) !== 'string') { throw 'no file provided' }
-  if(typeof(opts.name) !== 'string') { throw 'no contract name provided' }
-  if(!Array.isArray(opts.args)) {
-    opts.args = [] 
-  }
-  if(typeof(opts.txParams) !== 'object') { throw 'no txParams provided' }
-  if(typeof(opts.signingKey) !== 'string') { throw 'no signing key provided' }
-  if(typeof(opts.web3Provider) !== 'string') {
-    opts.web3Provider = defaultWeb3Provider
-  }
+  for(let contract in opts) {
+    /* Check opts */
+    if(typeof(opts[contract].file) !== 'string') { throw 'no file provided' }
+    if(!Array.isArray(opts[contract].args)) {
+      opts[contract].args = [] 
+    }
+    if(typeof(opts[contract].txParams) !== 'object') { throw 'no txParams provided' }
+    if(typeof(opts[contract].signingKey) !== 'string') { throw 'no signing key provided' }
+    if(typeof(opts[contract].web3Provider) !== 'string') {
+      opts[contract].web3Provider = defaultWeb3Provider
+    }
 
-  if(typeof(opts.web3) === 'undefined') {
-    opts.web3 = new Web3();
-    opts.web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider));
+    if(typeof(opts[contract].web3) === 'undefined') {
+      opts[contract].web3 = new Web3()
+      opts[contract].web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider))
+    }
+    
+    /* Check opts.txParams */
+    if(typeof(opts[contract].txParams.value) !== 'number') {
+      opts[contract].txParams.value = 0 
+    }
+    if(typeof(opts[contract].txParams.gas) !== 'number') {
+      opts[contract].txParams.gas = defaultGas
+    }
+    if(typeof(opts[contract].txParams.gasPrice) !== 'number') {
+      opts[contract].txParams.gasPrice = defaultGasPrice 
+    }
+    if(typeof(opts[contract].txParams.nonce) !== 'number') { throw 'no nonce provided' }
+    /* ^ this is recoverable, but throw for now. */
   }
-  
-  /* Check opts.txParams */
-  if(typeof(opts.txParams.value) !== 'number') {
-    opts.txParams.value = 0 
-  }
-  if(typeof(opts.txParams.gas) !== 'number') {
-    opts.txParams.gas = defaultGas
-  }
-  if(typeof(opts.txParams.gasPrice) !== 'number') {
-    opts.txParams.gasPrice = defaultGasPrice 
-  }
-  if(typeof(opts.txParams.nonce) !== 'number') { throw 'no nonce provided' }
-  /* ^ this is recoverable, but throw for now. */
 
   return opts
+}
+
+export function orderDeployment(opts: DeployOpts): Array<DeployOpts> {
+  const workingList = []
+
+  for(let contract in opts) {
+    opts[contract].name = contract
+    workingList.push(opts[contract])
+  }
+
+  workingList.sort(function(a, b) {
+    if(a.txParams.nonce < b.txParams.nonce) { return -1 }
+    return 1
+  })
+
+  return workingList
 }

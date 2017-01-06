@@ -1,11 +1,11 @@
-contract Test {
+contract Test1 {
     
     address public sender;
     address public addr;
     uint public number;
     bool public boolean;
 
-    function Test(address _addr, uint _number, bool _boolean) {
+    function Test1(address _addr, uint _number, bool _boolean) {
         sender = msg.sender;
         addr = _addr;
         number = _number;
