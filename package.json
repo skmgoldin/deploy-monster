@@ -1,8 +1,8 @@
 {
   "name": "deploy-monster",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A tool for deploying solidity contracts",
-  "main": "./bin/index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "compile": "tsc --outDir ./lib ./src/*",
     "testrpc": "testrpc -m wish candy sleep air brave shop employ tower quarter sell country exotic",
