@@ -43,9 +43,9 @@ An [`Output`](#Output) object.
 - `name` [string] - The name of the contract to be compiled, as in the Solidity `contract <Name> {` shared by the contract's constructor function.
 - `signingKey` [string]
 - `txParams` [object]
-- `args` [number] (*optional*, default `[]`)
-- `web3Provider` [string] (*optional*, default `http://localhost:8545`)
-- `web3` [object] (*optional*, default derived from `web3Provider`)
+- `args` [number] - (*optional*, default `[]`)
+- `web3Provider` [string] - (*optional*, default `http://localhost:8545`)
+- `web3` [object] - (*optional*, default derived from `web3Provider`)
 
 #### `Output`
 
@@ -60,6 +60,6 @@ An object with the following properties:
 #### `TxParams`
 
 - `nonce` [number] - The nonce with which to send the transaction. Derivable using [`web3.eth.getTransactionCount`](#https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactioncount) on the address of the `signingKey` specified in the [`DeployOpts`](#DeployOpts).
-- `gas` [number] (*optional*, default `1000000`)
-- `gasPrice` [number] (*optional*, default `1`)
-- `value` [number] (*optional*, default `0`)
+- `gas` [number] - (*optional*, default `1000000`)
+- `gasPrice` [number] - (*optional*, default `1`)
+- `value` [number] - (*optional*, default `0`)
