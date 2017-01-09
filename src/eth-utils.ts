@@ -1,6 +1,7 @@
 import { Deployed, Target, TxParams, Compiled, DeployOpts } from './types.js'
 import * as Web3 from 'web3'
 import * as solc from 'solc'
+const keythereum = require('keythereum')
 const Transaction = require('ethereumjs-tx')
 
 export function compile(src: string): Promise<Compiled> {
@@ -62,43 +63,60 @@ export function deploy(opts: DeployOpts, compiled: Compiled): Promise<Deployed> 
   }
 }
 
-export function sanitizeDeployOpts(opts: DeployOpts) {
-  const defaultGas = 1000000
-  const defaultGasPrice = 1
-  const defaultWeb3Provider = 'http://localhost:8545'
+export function sanitizeDeployOpts(opts: DeployOpts): Promise<DeployOpts> {
+  return new Promise(function(resolve, reject) {
+    //TODO: do the iteration recursively, or in some more functional style
+    const totalContracts = Object.keys(opts).length
+    let contractsProcessed = 0
 
-  for(let contract in opts) {
-    /* Check opts */
-    if(typeof(opts[contract].file) !== 'string') { throw 'no file provided' }
-    if(!Array.isArray(opts[contract].args)) {
-      opts[contract].args = [] 
-    }
-    if(typeof(opts[contract].txParams) !== 'object') { throw 'no txParams provided' }
-    if(typeof(opts[contract].signingKey) !== 'string') { throw 'no signing key provided' }
-    if(typeof(opts[contract].web3Provider) !== 'string') {
-      opts[contract].web3Provider = defaultWeb3Provider
-    }
+    const defaultGas = 1000000
+    const defaultGasPrice = 1
+    const defaultWeb3Provider = 'http://localhost:8545'
 
-    if(typeof(opts[contract].web3) === 'undefined') {
-      opts[contract].web3 = new Web3()
-      opts[contract].web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider))
-    }
-    
-    /* Check opts.txParams */
-    if(typeof(opts[contract].txParams.value) !== 'number') {
-      opts[contract].txParams.value = 0 
-    }
-    if(typeof(opts[contract].txParams.gas) !== 'number') {
-      opts[contract].txParams.gas = defaultGas
-    }
-    if(typeof(opts[contract].txParams.gasPrice) !== 'number') {
-      opts[contract].txParams.gasPrice = defaultGasPrice 
-    }
-    if(typeof(opts[contract].txParams.nonce) !== 'number') { throw 'no nonce provided' }
-    /* ^ this is recoverable, but throw for now. */
-  }
+    for(let contract in opts) {
+      contractsProcessed = contractsProcessed + 1
 
-  return opts
+      /* Check opts */
+      if(typeof(opts[contract].file) !== 'string') { throw 'no file provided' }
+      if(!Array.isArray(opts[contract].args)) {
+        opts[contract].args = [] 
+      }
+      if(typeof(opts[contract].txParams) !== 'object') { throw 'no txParams provided' }
+      if(typeof(opts[contract].signingKey) !== 'string') { throw 'no signing key provided' }
+      if(typeof(opts[contract].web3Provider) !== 'string') {
+        opts[contract].web3Provider = defaultWeb3Provider
+      }
+
+      if(typeof(opts[contract].web3) === 'undefined') {
+        opts[contract].web3 = new Web3()
+        opts[contract].web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider))
+      }
+      
+      /* Check opts.txParams */
+      if(typeof(opts[contract].txParams.value) !== 'number') {
+        opts[contract].txParams.value = 0 
+      }
+      if(typeof(opts[contract].txParams.gas) !== 'number') {
+        opts[contract].txParams.gas = defaultGas
+      }
+      if(typeof(opts[contract].txParams.gasPrice) !== 'number') {
+        opts[contract].txParams.gasPrice = defaultGasPrice 
+      }
+      if(typeof(opts[contract].txParams.nonce) !== 'number') {
+        const pubKey = keythereum.privateKeyToAddress(opts[contract].signingKey)
+        opts[contract].web3.eth.getTransactionCount(pubKey, function(err, res) {
+          opts[contract].txParams.nonce = res
+          if(contractsProcessed === totalContracts) {
+            resolve(opts)
+          }
+        })
+      } else {
+        if(contractsProcessed === totalContracts) {
+          resolve(opts)
+        }
+      }
+    }
+  })
 }
 
 export function orderDeployment(opts: DeployOpts): Array<DeployOpts> {
