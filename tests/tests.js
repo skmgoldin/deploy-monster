@@ -38,28 +38,25 @@ describe('index.js', function() {
     describe('#compileAndDeployFromConfig(\'configPath\')', function() {
 
       before(function(done) {
-        web3.eth.getTransactionCount(keythereum.privateKeyToAddress(signingKey),
-                                     function(err, res) {
-
-          opts = {
-            Test0: {
-              file: 'tests/test0.sol',
-              args: [argAddr, 4, true],
-              signingKey: signingKey.toString('hex'),
-              txParams: {nonce: res},
-              web3Provider: 'http://localhost:8545'
-            }
+        opts = {
+          Test0: {
+            file: 'tests/test0.sol',
+            args: [argAddr, 4, true],
+            signingKey: signingKey.toString('hex'),
+            txParams: {},
+            web3Provider: 'http://localhost:8545'
           }
+        }
 
-          fs.writeFileSync(path.resolve('tests/testConf.json'), JSON.stringify(opts))
+        fs.writeFileSync(path.resolve('tests/testConf.json'), JSON.stringify(opts))
 
-          dm.compileAndDeployFromConfig(path.resolve('tests/testConf.json')).then(function(_output) {
-            output = _output
-            testDef0 = web3.eth.contract(output.Test0.abi)
-            testInstance0 = testDef0.at(output.Test0.address)
-            done()
-          })                               
-        })
+        dm.compileAndDeployFromConfig(path.resolve('tests/testConf.json'))
+        .then(function(_output) {
+          output = _output
+          testDef0 = web3.eth.contract(output.Test0.abi)
+          testInstance0 = testDef0.at(output.Test0.address)
+          done()
+        })                               
       })
 
       it('should deploy the test0.sol contract', function(done) {
