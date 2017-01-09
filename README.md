@@ -44,7 +44,7 @@ A nested object keyed by the names (as in the Solidity `contract <Name> {` share
 - `file` [string] - An absolute or relative path from the process current working directory to the contract to be compiled.
 - `signingKey` [string]
 - `txParams` [[`TxParams`](#TxParams)]
-- `args` [number] - (*optional*, default `[]`)
+- `args` [Array] - (*optional*, default `[]`)
 - `web3Provider` [string] - (*optional*, default `http://localhost:8545`)
 - `web3` [object] - (*optional*, default derived from `web3Provider`)
 
@@ -64,7 +64,7 @@ An object with the following properties:
 
 A nested object keyed by the names (as in the Solidity `contract <Name> {` shared by the contracts' constructor functions) where the inner objects have the following properties:
 
-- `nonce` [number] - The nonce with which to send the transaction. Derivable using [`web3.eth.getTransactionCount`](#https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactioncount) on the address of the `signingKey` specified in the [`DeployOpts`](#DeployOpts).
+- `nonce` [number] - (*optional*, default derived using [`web3.eth.getTransactionCount`](#https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactioncount) on the address of the `signingKey` specified in the [`DeployOpts`](#DeployOpts)) The nonce with which to send the deployment transaction.
 - `gas` [number] - (*optional*, default `1000000`)
 - `gasPrice` [number] - (*optional*, default `1`)
 - `value` [number] - (*optional*, default `0`)
