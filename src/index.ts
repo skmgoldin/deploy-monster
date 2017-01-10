@@ -7,7 +7,8 @@ import * as path from 'path';
 /* From args */
 export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
   return new Promise((resolve, reject) => {
-    eth_utils.sanitizeDeployOpts(_opts).then(function(opts) {
+    eth_utils.sanitizeDeployOpts(_opts)
+    .then(function(opts) {
       const orderedOpts = eth_utils.orderDeployment(opts)
       const output = {}
 
@@ -25,7 +26,8 @@ export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
 
           contract.txParams.data = '0x' + output[contract.name].bytecode
 
-          eth_utils.deploy(contract, compiled).then((deployed) => {
+          eth_utils.deploy(contract, compiled)
+          .then((deployed) => {
             output[contract.name].address = deployed.address
             output[contract.name].txHash = deployed.txHash
             numDeployed = numDeployed + 1
@@ -33,8 +35,14 @@ export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
               resolve(output)
             }
           })
+          .catch((err) => {
+            reject(err)
+          })
         })
       })     
+    })
+    .catch((err) => {
+      reject(err)
     })
   })
 }

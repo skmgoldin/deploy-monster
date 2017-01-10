@@ -42,12 +42,15 @@ export function deploy(opts: DeployOpts, compiled: Compiled): Promise<Deployed> 
     tx.sign(signingKey)
     const rawTx = tx.serialize().toString('hex')
     opts.web3.eth.sendRawTransaction(rawTx, function(err, txHash) {
-      if(err) { return reject(err) }
+      if(err) { reject(err) }
       deployed.txHash = txHash
       getTxReceipt(deployed.txHash)
       .then((txReceipt) => {
         deployed.address = txReceipt.contractAddress
         resolve(deployed)
+      })
+      .catch((err) => {
+        reject(err)
       })
     })
   })
@@ -80,19 +83,20 @@ export function sanitizeDeployOpts(opts: DeployOpts): Promise<DeployOpts> {
       contractsProcessed = contractsProcessed + 1
 
       /* Check opts */
-      if(typeof(opts[contract].file) !== 'string') { throw 'no file provided' }
+      if(typeof(opts[contract].file) !== 'string') { reject(new Error('no file provided')) }
       if(!Array.isArray(opts[contract].args)) {
         opts[contract].args = [] 
       }
-      if(typeof(opts[contract].txParams) !== 'object') { throw 'no txParams provided' }
-      if(typeof(opts[contract].signingKey) !== 'string') { throw 'no signing key provided' }
+      if(typeof(opts[contract].txParams) !== 'object') { reject(new Error('no txParams provided')) }
+      if(typeof(opts[contract].signingKey) !== 'string') { reject(new Error('no signing key provided')) }
       if(typeof(opts[contract].web3Provider) !== 'string') {
         opts[contract].web3Provider = defaultWeb3Provider
       }
 
       if(typeof(opts[contract].web3) === 'undefined') {
         opts[contract].web3 = new Web3()
-        opts[contract].web3.setProvider(new Web3.providers.HttpProvider(opts.web3Provider))
+        opts[contract].web3.setProvider(new Web3.providers.HttpProvider(
+                                        opts[contract].web3Provider))
       }
       
       /* Check opts.txParams */
@@ -108,6 +112,7 @@ export function sanitizeDeployOpts(opts: DeployOpts): Promise<DeployOpts> {
       if(typeof(opts[contract].txParams.nonce) !== 'number') {
         const pubKey = keythereum.privateKeyToAddress(opts[contract].signingKey)
         opts[contract].web3.eth.getTransactionCount(pubKey, function(err, res) {
+          if(err) { reject(new Error('Couldn\'t get a nonce for provided signing key')) }
           opts[contract].txParams.nonce = res
           if(contractsProcessed === totalContracts) {
             resolve(opts)
