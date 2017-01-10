@@ -56,7 +56,10 @@ describe('index.js', function() {
           testDef0 = web3.eth.contract(output.Test0.abi)
           testInstance0 = testDef0.at(output.Test0.address)
           done()
-        })                               
+        })  
+        .catch(function(err) {
+          console.log(err)
+        })
       })
 
       it('should deploy the test0.sol contract', function(done) {
