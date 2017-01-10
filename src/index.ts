@@ -40,6 +40,9 @@ export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
             reject(err)
           })
         })
+        .catch((err) => {
+          reject(err)
+        })
       })     
     })
     .catch((err) => {

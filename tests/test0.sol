@@ -1,3 +1,5 @@
+pragma solidity ^0.4.7;
+
 contract Test0 {
     
     address public sender;

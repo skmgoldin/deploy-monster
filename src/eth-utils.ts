@@ -8,6 +8,8 @@ export function compile(src: string): Promise<Compiled> {
   return new Promise((resolve, reject) => {
     const solcOut = solc.compile(src, 0) // No optimizer
 
+    if('errors' in solcOut) { reject(new Error('Your contract has errors! ' +
+                                               'solc reports:\n' + solcOut.errors)) }
     const compiled = {}
     for(var contract in solcOut.contracts) {
       compiled[contract] = {
@@ -17,7 +19,6 @@ export function compile(src: string): Promise<Compiled> {
     }
 
     resolve(compiled)
-    // TODO: handle error
   })
 }
 
