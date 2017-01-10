@@ -40,7 +40,7 @@ export function deploy(opts: DeployOpts, compiled: Compiled): Promise<Deployed> 
 
     const signingKey = new Buffer(opts.signingKey, 'hex')
     tx.sign(signingKey)
-    const rawTx = tx.serialize()
+    const rawTx = tx.serialize().toString('hex')
     opts.web3.eth.sendRawTransaction(rawTx, function(err, txHash) {
       if(err) { return reject(err) }
       deployed.txHash = txHash
