@@ -15,7 +15,8 @@ export function compileAndDeploy(_opts: DeployOpts): Promise<Output> {
       let numDeployed = 0
       orderedOpts.forEach(function(contract) {
         const src = fs.readFileSync(path.resolve(contract.file), 'utf8')
-        eth_utils.compile(src).then((compiled) => {
+        eth_utils.compile(src)
+        .then((compiled) => {
 
           for(let contract in compiled) {
             output[contract] = {
