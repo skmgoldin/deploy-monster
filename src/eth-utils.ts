@@ -44,21 +44,24 @@ export function deploy(opts: DeployOpts, compiled: Compiled): Promise<Deployed> 
     opts.web3.eth.sendRawTransaction(rawTx, function(err, txHash) {
       if(err) { return reject(err) }
       deployed.txHash = txHash
-      getTxReceipt(deployed.txHash, function(err, res) {
-        deployed.address = res.contractAddress
+      getTxReceipt(deployed.txHash)
+      .then((txReceipt) => {
+        deployed.address = txReceipt.contractAddress
         resolve(deployed)
       })
     })
   })
 
-  function getTxReceipt(txHash: string, cb) {
-    opts.web3.eth.getTransactionReceipt(txHash, function(err, txReceipt) {
-      if(err) { throw 'couldn\'t get Tx receipt' }
-      if(txReceipt !== null) {
-        cb(null, txReceipt)
-      } else { 
-        getTxReceipt(txHash, cb)
-      }
+  function getTxReceipt(txHash: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      opts.web3.eth.getTransactionReceipt(txHash, function(err, txReceipt) {
+        if(err) { reject(new Error('couldn\'t get Tx receipt')) }
+        if(txReceipt !== null) {
+          resolve(txReceipt)
+        } else { 
+          resolve(getTxReceipt(txHash))
+        }
+      })
     })
   }
 }
