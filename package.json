@@ -19,6 +19,7 @@
     "commander": "^2.9.0",
     "ethereumjs-testrpc": "^3.0.0",
     "ethereumjs-tx": "^1.2.0",
+    "figlet": "^1.2.0",
     "keythereum": "^0.3.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.2.0",
