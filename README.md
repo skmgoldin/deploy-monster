@@ -68,3 +68,55 @@ A nested object keyed by the names (as in the Solidity `contract <Name> {` share
 - `gas` [number] - (*optional*, default `1000000`)
 - `gasPrice` [number] - (*optional*, default `1`)
 - `value` [number] - (*optional*, default `0`)
+
+### CLI
+
+```bash
+$ deploy-monster --help
+
+  Usage: cli [options] [arguments]
+
+  A tool for deploying Ethereum smart contracts.
+
+  Options:
+
+    -h, --help                      output usage information
+    -V, --version                   output the version number
+    -n, --name [name]               Smart contract name. Default: uses filename if not passed.
+    -f, --file [file]               Solidity smart contract file.
+    -sk, --signing-key [key]        Signing key.
+    -p, --web3-provider [provider]  Web3 provider. Default: http://localhost:8545
+    -c, --config [file]             Config file.
+    -n, --nonce [number]            Nonce value. Default: derived using web3.eth.getTransactionCount
+    -g, --gas [amount]              Gas amount. Default: 1000000
+    -gp, --gas-price [amount]       Gas Price. Default: 1
+    -v, --value [amount]            Amount to send. Default: 0
+```
+
+CLI Examples
+
+Basic example:
+
+```bash
+$ deploy-monster --file=../contracts/MyToken.sol --signing-key=3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26 --web3-provider="http://localhost:8545"
+```
+
+Using config file:
+
+`config.json`
+
+```json
+{
+  "MyToken": {
+    "file": "./contracts/MyToken.sol",
+    "signingKey": "3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26",
+    "txParams": {},
+    "args": [1000, "My Token"],
+    "web3Provider": "http://localhost:8545"
+  }
+}
+```
+
+```bash
+$ deploy-monster --config=config.json
+```
