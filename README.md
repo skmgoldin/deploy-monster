@@ -69,7 +69,9 @@ A nested object keyed by the names (as in the Solidity `contract <Name> {` share
 - `gasPrice` [number] - (*optional*, default `1`)
 - `value` [number] - (*optional*, default `0`)
 
-### CLI
+## CLI
+
+Usage:
 
 ```bash
 $ deploy-monster --help
@@ -91,14 +93,15 @@ $ deploy-monster --help
     -g, --gas [amount]              Gas amount. Default: 1000000
     -gp, --gas-price [amount]       Gas Price. Default: 1
     -v, --value [amount]            Amount to send. Default: 0
+    -o, --output [filepath]         Filepath to save response.
 ```
 
-CLI Examples
+#### CLI Examples
 
 Basic example:
 
 ```bash
-$ deploy-monster --file=../contracts/MyToken.sol --signing-key=3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26 --web3-provider="http://localhost:8545"
+$ deploy-monster --file=./contracts/MyToken.sol --signing-key=3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26 --web3-provider="http://localhost:8545" --output=./output.json
 ```
 
 Using config file:
