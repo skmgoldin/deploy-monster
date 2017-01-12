@@ -110,16 +110,16 @@ $ deploy-monster --help
 
 Basic example:
 
-`MyToken.sol`
+`Token.sol`
 
 ```solidity
 pragma solidity ^0.4.6;
 
-contract MyToken {
+contract Token {
     mapping (address => uint256) public balanceOf;
     string public name = '';
 
-    function MyToken( uint256 initialSupply, string _name) {
+    function Token( uint256 initialSupply, string _name) {
         balanceOf[msg.sender] = initialSupply;
         name = _name;
     }
@@ -134,7 +134,7 @@ contract MyToken {
 ```
 
 ```bash
-$ deploy-monster --file=./contracts/MyToken.sol --signing-key=3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26 --web3-provider="http://localhost:8545" --output=./output.json 1000 My Token
+$ deploy-monster --file=./contracts/Token.sol --signing-key=3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26 --web3-provider="http://localhost:8545" --output=./output.json 1000 "My Token"
 ```
 
 Using config file:
@@ -143,8 +143,8 @@ Using config file:
 
 ```json
 {
-  "MyToken": {
-    "file": "./contracts/MyToken.sol",
+  "Token": {
+    "file": "./contracts/Token.sol",
     "signingKey": "3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26",
     "txParams": {},
     "args": [1000, "My Token"],
