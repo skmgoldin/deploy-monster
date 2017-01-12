@@ -1,6 +1,6 @@
 {
   "name": "deploy-monster",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "A tool for deploying solidity contracts",
   "main": "./lib/index.js",
   "scripts": {
@@ -8,16 +8,23 @@
     "testrpc": "testrpc -m wish candy sleep air brave shop employ tower quarter sell country exotic",
     "test": "npm run compile && mocha tests/tests.js"
   },
+  "bin": {
+    "deploy-monster": "./bin/index.js"
+  },
   "author": "Mike Goldin <mike.goldin@consensys.net>",
   "dependencies": {
-    "ethereumjs-tx": "^1.2.0",
-    "keythereum": "^0.3.0",
-    "solc": "^0.4.4",
-    "mkdirp": "^0.5.1",
-    "web3": "^0.18.0",
-    "mocha": "^3.2.0",
     "chai": "^3.5.0",
-    "ethereumjs-testrpc": "^3.0.0"
+    "cli-spinner": "^0.2.5",
+    "colors": "^1.1.2",
+    "commander": "^2.9.0",
+    "ethereumjs-testrpc": "^3.0.0",
+    "ethereumjs-tx": "^1.2.0",
+    "figlet": "^1.2.0",
+    "keythereum": "^0.3.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "^3.2.0",
+    "solc": "^0.4.4",
+    "web3": "^0.18.0"
   },
   "devDependencies": {
     "@types/es6-promise": "^0.0.32",
