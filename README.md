@@ -110,8 +110,31 @@ $ deploy-monster --help
 
 Basic example:
 
+`MyToken.sol`
+
+```solidity
+pragma solidity ^0.4.6;
+
+contract MyToken {
+    mapping (address => uint256) public balanceOf;
+    string public name = '';
+
+    function MyToken( uint256 initialSupply, string _name) {
+        balanceOf[msg.sender] = initialSupply;
+        name = _name;
+    }
+
+    function transfer(address _to, uint256 _value) {
+        if (balanceOf[msg.sender] < _value) throw;
+        if (balanceOf[_to] + _value < balanceOf[_to]) throw;
+        balanceOf[msg.sender] -= _value;
+        balanceOf[_to] += _value;
+    }
+}
+```
+
 ```bash
-$ deploy-monster --file=./contracts/MyToken.sol --signing-key=3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26 --web3-provider="http://localhost:8545" --output=./output.json
+$ deploy-monster --file=./contracts/MyToken.sol --signing-key=3a183dbf44f6a6a5112e6dff1e1283238e9b9703938d94f5aa53cf8581ab2c26 --web3-provider="http://localhost:8545" --output=./output.json 1000 My Token
 ```
 
 Using config file:
