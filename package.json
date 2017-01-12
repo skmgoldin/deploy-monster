@@ -1,6 +1,6 @@
 {
   "name": "deploy-monster",
-  "version": "1.2.2",
+  "version": "1.2.0",
   "description": "A tool for deploying solidity contracts",
   "main": "./lib/index.js",
   "scripts": {

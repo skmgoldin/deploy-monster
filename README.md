@@ -71,6 +71,12 @@ A nested object keyed by the names (as in the Solidity `contract <Name> {` share
 
 ## CLI
 
+Install:
+
+```bash
+npm install -g deploy-monster
+```
+
 Usage:
 
 ```bash
